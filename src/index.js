@@ -37,8 +37,15 @@ const presets = {
 const makeEntry = (entry, initEntry) => {
   if (typeof entry === "object" && !Array.isArray(entry)) {
     Object.keys(entry).forEach(e => {
-      entry[e] = makeEntry(entry[e], initEntry);
-    });
+      if (entry[e].import) {
+        entry[e] = {
+          ...entry[e].import,
+          import: makeEntry(entry[e].import, initEntry)
+        }
+      } else {
+        entry[e] = makeEntry(entry[e], initEntry)
+      }
+    })
     return entry;
   }
   if (typeof entry === "string") {
